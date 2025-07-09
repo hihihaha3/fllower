@@ -7,9 +7,65 @@
     <link rel="stylesheet" href="style.css" />
     <script src="main.js" type="text/javascript"></script>
     <title>Ha</title>
+    <style>
+      /* Kiểu cho màn hình chờ ban đầu */
+      #entry-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 9999;
+        transition: opacity 1.5s ease;
+      }
+
+      /* Ẩn lớp phủ khi có lớp 'hidden' */
+      #entry-overlay.hidden {
+        opacity: 0;
+        pointer-events: none; /* Vô hiệu hóa tương tác sau khi ẩn */
+      }
+
+      /* Kiểu cho dòng chữ */
+      .click-text {
+        color: white;
+        font-size: 24px;
+        font-family: 'Verdana', sans-serif;
+        padding: 20px 30px;
+        border: 2px solid white;
+        border-radius: 15px;
+        animation: pulse 2s infinite;
+      }
+
+      /* Hiệu ứng nhấp nháy cho chữ */
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+        }
+        70% {
+          transform: scale(1.05);
+          box-shadow: 0 0 10px 20px rgba(255, 255, 255, 0);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+        }
+      }
+    </style>
   </head>
 
   <body class="not-loaded">
+    <div id="entry-overlay">
+      <div class="click-text">Click vào đây nè!</div>
+    </div>
+
+    <audio id="background-music" src="https://cdn.pixabay.com/download/audio/2023/10/11/audio_a2f2658826.mp3" loop></audio>
+
     <div class="night"></div>
     <div class="happy-woman-day">Tặng Bồ Bông Hoa</div>
     <div class="flowers">
@@ -321,5 +377,37 @@
         </div>
       </div>
     </div>
+    
+    <script>
+      // Đảm bảo DOM đã tải xong
+      document.addEventListener('DOMContentLoaded', () => {
+        const overlay = document.getElementById('entry-overlay');
+        const music = document.getElementById('background-music');
+        const body = document.body;
+
+        // Thêm sự kiện click vào màn hình chờ
+        overlay.addEventListener('click', () => {
+          // Trình duyệt yêu cầu người dùng tương tác trước khi phát âm thanh
+          // Lệnh play() trả về một Promise
+          const playPromise = music.play();
+
+          if (playPromise !== undefined) {
+            playPromise.catch(error => {
+              // Lỗi tự động phát, thường xảy ra nếu người dùng chưa tương tác
+              console.error("Lỗi phát nhạc:", error);
+            });
+          }
+
+          // Thêm lớp 'hidden' để làm mờ và ẩn lớp phủ
+          overlay.classList.add('hidden');
+          
+          // Xóa lớp 'not-loaded' khỏi body để bắt đầu hoạt ảnh hoa
+          // Đặt độ trễ nhỏ để hiệu ứng chuyển cảnh mượt mà hơn
+          setTimeout(() => {
+            body.classList.remove('not-loaded');
+          }, 500);
+        });
+      });
+    </script>
   </body>
 </html>
